@@ -697,6 +697,16 @@ var currentLink = null; // a Link
 var movingObject = false;
 var originalClick;
 
+function clearCanvas() {
+	nodes = [];
+	links = [];
+	localStorage.removeItem('fsm');
+	var context = canvas.getContext('2d');
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	nodeRadius = 30;
+	document.getElementById("rangeSlider").value = 30;
+}
+
 function drawUsing(c) {
 	c.clearRect(0, 0, canvas.width, canvas.height);
 	c.save();
