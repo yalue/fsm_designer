@@ -711,6 +711,13 @@ function clearCanvas() {
 	document.getElementById("rangeSlider").value = 30;
 }
 
+function radiusChanged() {
+	var newRadius = document.getElementById("rangeSlider").value;
+	newRadius = parseInt(newRadius);
+	nodeRadius = newRadius;
+	draw();
+}
+
 function drawUsing(c) {
 	c.clearRect(0, 0, canvas.width, canvas.height);
 	c.save();

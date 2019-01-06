@@ -114,7 +114,7 @@ if (typeof btoa == 'undefined') {
 			<li><b>Make accept state:</b> double-click on an existing state</li>
 			<li><b>Type numeric subscript:</b> put an underscore before the number (like "S_0")</li>
 			<li><b>Type greek letter:</b> put a backslash before it (like "\beta")</li>
-			<li><b>Circle radius:</b> <input type="range" id="rangeSlider" min="20" max="80" value="30" oninput="nodeRadius = this.value;" onchange="nodeRadius = this.value;" />
+			<li><b>Circle radius:</b> <input type="range" id="rangeSlider" min="20" max="80" value="30" oninput="javascript:radiusChanged();" onchange="javascript:radiusChanged();" />
 			<li><b>Click here to clear everything:</b> <button onclick="javascript:clearCanvas()">Clear everything</button>
 		</ul>
 		<p>This was made in HTML5 and JavaScript using the canvas element.</p>
