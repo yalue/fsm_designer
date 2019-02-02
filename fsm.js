@@ -478,7 +478,9 @@ function ExportAsLaTeX(bounds) {
 			}
 			x *= this._scale;
 			y *= this._scale;
-			this._texData += '\\draw (' + fixed(x, 2) + ',' + fixed(-y, 2) + ') node ' + nodeParams + '{$' + originalText.replace(/ /g, '\\mbox{ }') + '$};\n';
+			var escapedBraces = originalText.replace(/{/g, "\\{");
+			escapedBraces = escapedBraces.replace(/}/g, "\\}");
+			this._texData += '\\draw (' + fixed(x, 2) + ',' + fixed(-y, 2) + ') node ' + nodeParams + '{$' + escapedBraces.replace(/ /g, '\\mbox{ }') + '$};\n';
 		}
 	};
 
