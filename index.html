@@ -102,7 +102,7 @@ if (typeof btoa == 'undefined') {
 		<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
 	</canvas>
 	<div>
-		<p class="center">Export as: <a href="javascript:saveAsPNG()">PNG</a> | <a href="javascript:saveAsSVG()">SVG</a> | <a href="javascript:saveAsLaTeX()">LaTeX</a></p>
+		<p class="center">Export as: <a href="javascript:saveAsPNG()">PNG</a> | <a href="javascript:saveAsSVG()">SVG</a> | <a href="javascript:saveAsLaTeX()">LaTeX</a> | <a href="javascript:saveAsJSON()">JSON</a> | <button onclick="javascript:uploadJSON()">Upload JSON</button></p>
 		<textarea id="output"></textarea>
 		<p>The big white box above is the FSM designer.&nbsp; Here's how to use it:</p>
 		<ul>
@@ -115,17 +115,12 @@ if (typeof btoa == 'undefined') {
 			<li><b>Type numeric subscript:</b> put an underscore before the number (like "S_0")</li>
 			<li><b>Type greek letter:</b> put a backslash before it (like "\beta")</li>
 			<li><b>Circle radius:</b> <input type="range" id="rangeSlider" min="20" max="80" value="30" oninput="javascript:radiusChanged();" onchange="javascript:radiusChanged();" />
+			<li><b>If you just want to add more text:</b> <button onclick="javascript:makeNodeTextOnly()">Toggle drawing the selected node's circles</button>
 			<li><b>Click here to clear everything:</b> <button onclick="javascript:clearCanvas()">Clear everything</button>
 		</ul>
 		<p>This was made in HTML5 and JavaScript using the canvas element.</p>
 	</div>
 	<p>Created by <a href="http://madebyevan.com/">Evan Wallace</a> in 2010</p>
+	<!-- placeholder file upload thing to read the uploaded JSON -->
+	<input type="file" id="jsonUpload" style="opacity:0;" accept="text/json" oninput="javascript:jsonUploaded()"/>
 </body></html>
-<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-17521220-1', 'auto');
-ga('send', 'pageview');
-</script>

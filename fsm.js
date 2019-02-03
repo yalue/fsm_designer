@@ -179,6 +179,7 @@ function Node(x, y) {
 	this.mouseOffsetY = 0;
 	this.isAcceptState = false;
 	this.text = '';
+	this.textOnly = false;
 }
 
 Node.prototype.setMouseStart = function(x, y) {
@@ -192,6 +193,11 @@ Node.prototype.setAnchorPoint = function(x, y) {
 };
 
 Node.prototype.draw = function(c) {
+	if (this.textOnly) {
+		drawText(c, this.text, this.x, this.y, null, selectedObject == this);
+		return;
+	}
+
 	// draw the circle
 	c.beginPath();
 	c.arc(this.x, this.y, nodeRadius, 0, 2 * Math.PI, false);
@@ -713,6 +719,13 @@ function clearCanvas() {
 	document.getElementById("rangeSlider").value = 30;
 }
 
+function makeNodeTextOnly() {
+	if ("textOnly" in selectedObject) {
+		selectedObject.textOnly = !selectedObject.textOnly;
+		draw();
+	}
+}
+
 function radiusChanged() {
 	var newRadius = document.getElementById("rangeSlider").value;
 	newRadius = parseInt(newRadius);
@@ -1060,14 +1073,18 @@ function getBoundingRect() {
 	return [minX, minY, maxX, maxY];
 }
 
-function downloadSVGFile(filename, svgData) {
+function downloadFile(filename, data, type) {
 	var element = document.createElement('a');
-	element.setAttribute('href', 'data:image/svg+xml;base64,' + btoa(svgData));
+	element.setAttribute('href', 'data:' + type + ';base64,' + btoa(data));
 	element.setAttribute('download', filename);
 	element.style.display = 'none';
 	document.body.appendChild(element);
 	element.click();
 	document.body.removeChild(element);
+}
+
+function downloadSVGFile(filename, svgData) {
+	downloadFile(filename, svgData, 'image/svg+xml');
 }
 
 function saveAsSVG() {
@@ -1092,6 +1109,34 @@ function saveAsLaTeX() {
 	output(texData);
 }
 
+function saveAsJSON() {
+	var jsonData = JSON.stringify(getBackupData());
+	downloadFile("automaton_backup.json", jsonData, "text/json");
+}
+
+function jsonUploaded() {
+	var uploadElement = document.getElementById("jsonUpload");
+	if (uploadElement.files.length < 1) return;
+	var file = uploadElement.files[0];
+	var reader = new FileReader();
+	reader.onload = function(e) {
+		var content = e.target.result;
+		try {
+			var data = JSON.parse(content);
+			clearCanvas();
+			restoreFromBackupData(data);
+		} catch (e) {
+			alert("Failed loading file " + file.name);
+		}
+	};
+	reader.readAsText(file);
+}
+
+function uploadJSON() {
+	var uploadElement = document.getElementById("jsonUpload");
+	uploadElement.click();
+}
+
 function det(a, b, c, d, e, f, g, h, i) {
 	return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g;
 }
@@ -1112,6 +1157,42 @@ function fixed(number, digits) {
 	return number.toFixed(digits).replace(/0+$/, '').replace(/\.$/, '');
 }
 
+function restoreFromBackupData(backup) {
+	for(var i = 0; i < backup.nodes.length; i++) {
+		var backupNode = backup.nodes[i];
+		var node = new Node(backupNode.x, backupNode.y);
+		node.isAcceptState = backupNode.isAcceptState;
+		node.text = backupNode.text;
+		node.textOnly = backupNode.textOnly;
+		nodes.push(node);
+	}
+	for(var i = 0; i < backup.links.length; i++) {
+		var backupLink = backup.links[i];
+		var link = null;
+		if(backupLink.type == 'SelfLink') {
+			link = new SelfLink(nodes[backupLink.node]);
+			link.anchorAngle = backupLink.anchorAngle;
+			link.text = backupLink.text;
+		} else if(backupLink.type == 'StartLink') {
+			link = new StartLink(nodes[backupLink.node]);
+			link.deltaX = backupLink.deltaX;
+			link.deltaY = backupLink.deltaY;
+			link.text = backupLink.text;
+		} else if(backupLink.type == 'Link') {
+			link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
+			link.parallelPart = backupLink.parallelPart;
+			link.perpendicularPart = backupLink.perpendicularPart;
+			link.text = backupLink.text;
+			link.lineAngleAdjust = backupLink.lineAngleAdjust;
+		}
+		if(link != null) {
+			links.push(link);
+		}
+	}
+	nodeRadius = backup.nodeRadius;
+	draw();
+}
+
 function restoreBackup() {
 	if(!localStorage || !JSON) {
 		return;
@@ -1119,50 +1200,17 @@ function restoreBackup() {
 
 	try {
 		var backup = JSON.parse(localStorage['fsm']);
-
-		for(var i = 0; i < backup.nodes.length; i++) {
-			var backupNode = backup.nodes[i];
-			var node = new Node(backupNode.x, backupNode.y);
-			node.isAcceptState = backupNode.isAcceptState;
-			node.text = backupNode.text;
-			nodes.push(node);
-		}
-		for(var i = 0; i < backup.links.length; i++) {
-			var backupLink = backup.links[i];
-			var link = null;
-			if(backupLink.type == 'SelfLink') {
-				link = new SelfLink(nodes[backupLink.node]);
-				link.anchorAngle = backupLink.anchorAngle;
-				link.text = backupLink.text;
-			} else if(backupLink.type == 'StartLink') {
-				link = new StartLink(nodes[backupLink.node]);
-				link.deltaX = backupLink.deltaX;
-				link.deltaY = backupLink.deltaY;
-				link.text = backupLink.text;
-			} else if(backupLink.type == 'Link') {
-				link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
-				link.parallelPart = backupLink.parallelPart;
-				link.perpendicularPart = backupLink.perpendicularPart;
-				link.text = backupLink.text;
-				link.lineAngleAdjust = backupLink.lineAngleAdjust;
-			}
-			if(link != null) {
-				links.push(link);
-			}
-		}
+		restoreFromBackupData(backup);
 	} catch(e) {
 		localStorage['fsm'] = '';
 	}
 }
 
-function saveBackup() {
-	if(!localStorage || !JSON) {
-		return;
-	}
-
+function getBackupData() {
 	var backup = {
 		'nodes': [],
 		'links': [],
+		'nodeRadius': nodeRadius,
 	};
 	for(var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
@@ -1171,6 +1219,7 @@ function saveBackup() {
 			'y': node.y,
 			'text': node.text,
 			'isAcceptState': node.isAcceptState,
+			'textOnly': node.textOnly,
 		};
 		backup.nodes.push(backupNode);
 	}
@@ -1207,6 +1256,14 @@ function saveBackup() {
 			backup.links.push(backupLink);
 		}
 	}
+	return backup;
+}
+
+function saveBackup() {
+	if(!localStorage || !JSON) {
+		return;
+	}
+	var backup = getBackupData();
 
 	localStorage['fsm'] = JSON.stringify(backup);
 }
