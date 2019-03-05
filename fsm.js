@@ -601,7 +601,7 @@ function ExportAsSVG(bounds) {
 	this.save = this.restore = this.clearRect = function(){};
 }
 
-var greekLetterNames = [ 'Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'emptyset' ];
+var greekLetterNames = [ 'Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'emptyset', 'rightarrow', 'leftarrow'];
 
 function convertLatexShortcuts(text) {
 	// html greek characters
@@ -609,6 +609,14 @@ function convertLatexShortcuts(text) {
 		var name = greekLetterNames[i];
 		if (name == "emptyset") {
 			text = text.replace(new RegExp('\\\\' + name, 'g'), String.fromCharCode(8709));
+			continue;
+		}
+		if (name == "rightarrow") {
+			text = text.replace(new RegExp('\\\\' + name, 'g'), String.fromCharCode(8594));
+			continue;
+		}
+		if (name == "leftarrow") {
+			text = text.replace(new RegExp('\\\\' + name, 'g'), String.fromCharCode(8592));
 			continue;
 		}
 		text = text.replace(new RegExp('\\\\' + name, 'g'), String.fromCharCode(913 + i + (i > 16)));
