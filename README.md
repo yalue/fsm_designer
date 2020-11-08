@@ -12,7 +12,7 @@ in my personal use:
    allows for saving designs and modifying them later. (Quite useful when you
    have large diagrams--the most likely ones to contain mistakes!)
 
- - Made it automatically crop the PNG output!
+ - Made it automatically crop the PNG output.
 
  - Allowed adjusting circle sizes, to fit more text if needed.
 
@@ -31,5 +31,5 @@ Miscellaneous Notes
 -------------------
 
 I know the structure of the repository is different from the original, but I
-found that a single HTML + javascript file is sufficient for this!
+found that a single HTML + javascript file is sufficient for this.
 
